@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeniwise - Smart Student Budget Planner</title>
+    <link rel="icon" type="image/jpeg" href="https://r2cdn.perplexity.ai/WhatsApp-Image-2025-10-29-at-19.21.20_bac21956.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="authScreen" class="screen active">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1 class="app-name">ZENIWISE</h1>
+                    <p class="app-tagline">Smart Student Budget Management</p>
+                </div>
+                
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="signup">Sign Up</button>
+                </div>
+                
+                <!-- Quick Access Buttons -->
+                <div class="quick-access" id="quickAccessButtons">
+                    <button class="btn btn-primary" onclick="skipLogin()" style="width: 100%; margin-bottom: 12px;">
+                        🚀 Start Using App
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="useDemoAccount()" style="width: 100%; margin-bottom: 12px;">
+                        👤 Use Demo Account
+                    </button>
+                    
+                    <button class="btn btn-outline" onclick="showLoginForm()" style="width: 100%;">
+                        🔑 Login with Email
+                    </button>
+                </div>
+
+                <!-- Login Form (Initially Hidden) -->
+                <form id="loginForm" class="auth-form">
+                    <div style="margin: 20px 0; text-align: center; color: #8A93A6; font-size: 14px; position: relative;">
+                        <span style="background: rgba(255,255,255,0.95); padding: 0 12px; position: relative; z-index: 1;">OR</span>
+                        <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #E3E8EF;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email or Username</label>
+                        <input type="text" id="loginUsername" required placeholder="Enter email or username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required placeholder="Enter password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    
+                    <p class="auth-switch">
+                        Don't have an account? 
+                        <a href="#" onclick="switchToSignup(event)">Sign Up</a>
+                    </p>
+                    
+                    <button type="button" class="btn btn-outline" onclick="hideLoginForm()" style="margin-top: 12px;">
+                        ← Back to Quick Access
+                    </button>
+                </form>
+                
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signupName" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="signupUsername" required placeholder="Choose username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" required placeholder="Choose password (min 6 characters)" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" required placeholder="Re-enter password" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly Income (₹)</label>
+                        <input type="number" id="signupIncome" required placeholder="Enter monthly income" value="5000" min="0">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    
+                    <p class="auth-switch">
+                        Already have an account? 
+                        <a href="#" onclick="switchToLogin(event)">Login</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div id="appScreen" class="screen">
+        <!-- Modern Navigation Bar -->
+        <nav class="navbar glassmorphism-nav">
+            <div class="nav-brand">
+                <img src="https://r2cdn.perplexity.ai/WhatsApp-Image-2025-10-29-at-19.21.20_bac21956.jpg" alt="Zeniwise Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <span class="logo-icon" style="display:none;">💎</span>
+                <span style="color: white; font-weight: 700;">ZENIWISE</span>
+            </div>
+            <div class="nav-user-info">
+                <div class="streak-indicator">
+                    <span class="streak-icon">🔥</span>
+                    <span class="streak-count" id="navStreakCount">0</span>
+                </div>
+                <div class="level-badge" id="navLevelBadge">Lv.1</div>
+                <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
+            </div>
+            <div class="nav-links">
+                <button class="nav-btn active" data-view="dashboard">Home</button>
+                <button class="nav-btn" data-view="budgetPlanner">💰 Budget Planner</button>
+                <button class="nav-btn" data-view="addExpense">💸 Add Expense</button>
+                <button class="nav-btn" data-view="achievements">🏆 Achievements</button>
+                <button class="nav-btn" data-view="insights">🤖 AI Insights</button>
+                <button class="nav-btn" data-view="goals">Goals</button>
+                <button class="nav-btn" data-view="monthlyReport">📊 Monthly Report</button>
+                <button class="nav-btn" data-view="tips">Tips</button>
+                <button class="nav-btn" data-view="parentCoPilot" data-theme="parent-copilot">👨‍👩‍👧 Parent Co-Pilot</button>
+                <button class="nav-btn" data-view="profile" data-theme="profile">👤 Profile</button>
+            </div>
+        </nav>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view active">
+            <div class="hero-section">
+                <div class="container">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Welcome back, <span id="heroUsername">Student</span>! 👋</h1>
+                        <div class="hero-stats">
+                            <div class="hero-stat-item">
+                                <div class="hero-stat-icon">🔥</div>
+                                <div class="hero-stat-content">
+                                    <div class="hero-stat-label">Daily Streak</div>
+                                    <div class="hero-stat-value" id="heroStreak">0 days</div>
+                                </div>
+                            </div>
+                            <div class="hero-stat-item">
+                                <div class="hero-stat-icon">⭐</div>
+                                <div class="hero-stat-content">
+                                    <div class="hero-stat-label">Level</div>
+                                    <div class="hero-stat-value" id="heroLevel">1</div>
+                                </div>
+                            </div>
+                            <div class="hero-stat-item">
+                                <div class="hero-stat-icon">💰</div>
+                                <div class="hero-stat-content">
+                                    <div class="hero-stat-label">XP Points</div>
+                                    <div class="hero-stat-value" id="heroXP">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xp-progress-bar">
+                            <div class="xp-progress-fill" id="xpProgressFill" style="width: 0%"></div>
+                            <div class="xp-progress-text" id="xpProgressText">0 / 100 XP</div>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn voice-btn" onclick="startVoiceEntry()">
+                            <span class="quick-action-icon">🎤</span>
+                            <span class="quick-action-label">Voice Entry</span>
+                        </button>
+                        <button class="quick-action-btn scan-btn" onclick="openReceiptScanner()">
+                            <span class="quick-action-icon">📸</span>
+                            <span class="quick-action-label">Scan Receipt</span>
+                        </button>
+                        <button class="quick-action-btn chat-btn" onclick="openChatEntry()">
+                            <span class="quick-action-icon">💬</span>
+                            <span class="quick-action-label">Chat Entry</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <h2 class="view-title">Dashboard</h2>
+                
+                <!-- Budget Health Alert -->
+                <div id="budgetHealthAlert" class="budget-health-alert"></div>
+                
+                <!-- Budget Summary -->
+                <div class="card budget-summary-card">
+                    <h3 class="card-title">Budget Overview - <span id="currentMonthDisplay">October 2025</span></h3>
+                    <div class="budget-summary-grid">
+                        <div class="budget-summary-item">
+                            <div class="budget-summary-label">Budget Health Score</div>
+                            <div class="budget-summary-value" id="budgetHealthScore">85/100</div>
+                        </div>
+                        <div class="budget-summary-item">
+                            <div class="budget-summary-label">Total Budget</div>
+                            <div class="budget-summary-value amount" id="totalBudget">₹3,800</div>
+                        </div>
+                        <div class="budget-summary-item">
+                            <div class="budget-summary-label">Budget Used</div>
+                            <div class="budget-summary-value amount" id="budgetUsed">₹1,950</div>
+                        </div>
+                        <div class="budget-summary-item">
+                            <div class="budget-summary-label">Days Remaining</div>
+                            <div class="budget-summary-value" id="daysRemaining">3 days</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card summary-card">
+                        <div class="card-icon">💰</div>
+                        <div class="card-content">
+                            <div class="card-label">Total Income</div>
+                            <div class="card-value amount" id="totalIncome">₹5000</div>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card-icon">💸</div>
+                        <div class="card-content">
+                            <div class="card-label">Total Spent</div>
+                            <div class="card-value amount" id="totalSpent">₹0</div>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card-icon">💵</div>
+                        <div class="card-content">
+                            <div class="card-label">Remaining Savings</div>
+                            <div class="card-value amount" id="remainingSavings">₹5000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spending Chart -->
+                <div class="card">
+                    <h3 class="card-title">Spending by Category</h3>
+                    <div id="chartContainer" class="chart-container">
+                        <canvas id="spendingChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Expenses List -->
+                <div class="card">
+                    <h3 class="card-title">Recent Expenses</h3>
+                    <div id="expensesList" class="expenses-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Planner View -->
+        <div id="budgetPlannerView" class="view">
+            <div class="container">
+                <div class="budget-planner-header">
+                    <h2 class="view-title">Budget Planner</h2>
+                    <div class="budget-view-toggle">
+                        <button class="toggle-btn active" data-toggle="monthly">Monthly View</button>
+                        <button class="toggle-btn" data-toggle="yearly">Yearly View</button>
+                    </div>
+                </div>
+
+                <!-- Monthly Budget View -->
+                <div id="monthlyBudgetView" class="budget-view-container active">
+                    <div class="card">
+                        <div class="budget-month-header">
+                            <button class="month-nav-btn" onclick="navigateMonth(-1)">←</button>
+                            <div>
+                                <h3 id="selectedMonth" class="selected-month">October 2025</h3>
+                                <div class="month-income">
+                                    Income: <span class="amount" id="monthIncomeDisplay">₹5,000</span>
+                                    <button class="btn-edit-income" onclick="editMonthIncome()">✏️ Edit</button>
+                                </div>
+                            </div>
+                            <button class="month-nav-btn" onclick="navigateMonth(1)">→</button>
+                        </div>
+                    </div>
+
+                    <!-- Budget Allocation Table -->
+                    <div class="card">
+                        <div class="card-header-with-action">
+                            <h3 class="card-title">Budget Allocation</h3>
+                            <div class="budget-action-buttons">
+                                <button class="btn btn-primary btn-sm" onclick="showEditBudgetModal()">✏️ Edit Budget Allocation</button>
+                                <button class="btn btn-outline btn-sm" onclick="showBudgetWizard()">🔄 Recalculate Budget</button>
+                            </div>
+                        </div>
+                        <div id="budgetMethodBadge" class="budget-method-badge"></div>
+                        <div id="budgetAllocationTable"></div>
+                    </div>
+
+                    <!-- Budget vs Actual Chart -->
+                    <div class="card">
+                        <h3 class="card-title">Budget vs Actual Spending</h3>
+                        <div class="chart-container">
+                            <canvas id="budgetChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yearly Budget View -->
+                <div id="yearlyBudgetView" class="budget-view-container">
+                    <div class="card">
+                        <h3 class="card-title">Yearly Overview - 2025</h3>
+                        <div class="yearly-summary-grid">
+                            <div class="yearly-summary-item">
+                                <div class="yearly-summary-icon">💰</div>
+                                <div class="yearly-summary-label">Total Income</div>
+                                <div class="yearly-summary-value amount" id="yearlyIncome">₹60,000</div>
+                            </div>
+                            <div class="yearly-summary-item">
+                                <div class="yearly-summary-icon">💸</div>
+                                <div class="yearly-summary-label">Total Expenses</div>
+                                <div class="yearly-summary-value amount" id="yearlyExpenses">₹45,000</div>
+                            </div>
+                            <div class="yearly-summary-item">
+                                <div class="yearly-summary-icon">💵</div>
+                                <div class="yearly-summary-label">Total Savings</div>
+                                <div class="yearly-summary-value amount" id="yearlySavings">₹15,000</div>
+                            </div>
+                            <div class="yearly-summary-item">
+                                <div class="yearly-summary-icon">📊</div>
+                                <div class="yearly-summary-label">Savings Rate</div>
+                                <div class="yearly-summary-value" id="savingsRate">25%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Comparison Chart -->
+                    <div class="card">
+                        <h3 class="card-title">Monthly Spending Trend</h3>
+                        <div class="chart-container">
+                            <canvas id="yearlyTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Month by Month Table -->
+                    <div class="card">
+                        <h3 class="card-title">Month by Month Breakdown</h3>
+                        <div id="monthlyBreakdownTable" class="monthly-breakdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements View -->
+        <div id="achievementsView" class="view">
+            <div class="container">
+                <h2 class="view-title">🏆 Achievements &amp; Badges</h2>
+                
+                <div class="achievement-summary-cards">
+                    <div class="card achievement-summary-card">
+                        <div class="achievement-summary-icon">🏆</div>
+                        <div class="achievement-summary-content">
+                            <div class="achievement-summary-label">Total Achievements</div>
+                            <div class="achievement-summary-value" id="totalAchievements">0</div>
+                        </div>
+                    </div>
+                    <div class="card achievement-summary-card">
+                        <div class="achievement-summary-icon">⭐</div>
+                        <div class="achievement-summary-content">
+                            <div class="achievement-summary-label">Current Level</div>
+                            <div class="achievement-summary-value" id="achievementLevel">1</div>
+                        </div>
+                    </div>
+                    <div class="card achievement-summary-card">
+                        <div class="achievement-summary-icon">🔥</div>
+                        <div class="achievement-summary-content">
+                            <div class="achievement-summary-label">Longest Streak</div>
+                            <div class="achievement-summary-value" id="longestStreak">0 days</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Unlocked Badges</h3>
+                    <div id="achievementsList" class="achievements-grid"></div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Streak Calendar</h3>
+                    <div id="streakCalendar" class="streak-calendar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Insights View -->
+        <div id="insightsView" class="view">
+            <div class="container">
+                <h2 class="view-title">🤖 AI Financial Insights</h2>
+                
+                <div class="card gradient-card">
+                    <h3 class="card-title">💡 Smart Recommendations</h3>
+                    <div id="aiRecommendations" class="ai-insights-list"></div>
+                </div>
+
+                <div class="card gradient-card">
+                    <h3 class="card-title">📊 Spending Analysis</h3>
+                    <div id="spendingAnalysis" class="ai-insights-list"></div>
+                </div>
+
+                <div class="card gradient-card">
+                    <h3 class="card-title">🔮 Predictions</h3>
+                    <div id="aiPredictions" class="ai-insights-list"></div>
+                </div>
+
+                <div class="card gradient-card">
+                    <h3 class="card-title">💰 Savings Tips</h3>
+                    <div id="savingsTips" class="ai-insights-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Expense View -->
+        <div id="addExpenseView" class="view">
+            <div class="container">
+                <h2 class="view-title">Add New Expense</h2>
+                
+                <div class="expense-method-tabs">
+                    <button class="expense-tab active" data-tab="manual" onclick="switchExpenseTab('manual')">✍️ Manual</button>
+                    <button class="expense-tab" data-tab="voice" onclick="switchExpenseTab('voice')">🎤 Voice</button>
+                    <button class="expense-tab" data-tab="chat" onclick="switchExpenseTab('chat')">💬 Chat</button>
+                    <button class="expense-tab" data-tab="scan" onclick="switchExpenseTab('scan')">📸 Scan</button>
+                </div>
+
+                <!-- Manual Entry -->
+                <div class="card form-card expense-tab-content active" id="manualExpenseContent">
+                    <form id="expenseForm" onsubmit="return false;">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="expenseDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="expenseCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Food">Food</option>
+                                <option value="Travel">Travel</option>
+                                <option value="Study">Study</option>
+                                <option value="Misc">Misc</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="expenseAmount" required placeholder="Enter amount" min="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea id="expenseNotes" rows="3" placeholder="Enter notes (optional)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Expense</button>
+                    </form>
+                    <div id="expenseMessage" class="message"></div>
+                </div>
+
+                <!-- Voice Entry -->
+                <div class="card form-card expense-tab-content" id="voiceExpenseContent">
+                    <div class="voice-entry-container">
+                        <div class="language-selector">
+                            <button class="language-btn active" onclick="setVoiceLanguage('en-IN')" id="voiceLangEN">🇬🇧 English</button>
+                            <button class="language-btn" onclick="setVoiceLanguage('ta-IN')" id="voiceLangTA">🇮🇳 தமிழ் (Tamil)</button>
+                        </div>
+                        <div class="voice-animation" id="voiceAnimation">
+                            <div class="voice-circle"></div>
+                            <div class="voice-circle"></div>
+                            <div class="voice-circle"></div>
+                        </div>
+                        <p class="voice-instruction" id="voiceInstruction">Click the microphone and say something like:</p>
+                        <div class="voice-examples" id="voiceExamples">
+                            <div class="voice-example">"Spent 200 rupees on lunch"</div>
+                            <div class="voice-example">"Bought groceries for 1500"</div>
+                            <div class="voice-example">"Paid 50 for bus ride"</div>
+                        </div>
+                        <button class="voice-record-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()">
+                            <span class="voice-icon">🎤</span>
+                            <span class="voice-text">Tap to Speak</span>
+                        </button>
+                        <div id="voiceTranscript" class="voice-transcript"></div>
+                        <div id="voiceParsedResult" class="voice-parsed-result"></div>
+                    </div>
+                </div>
+
+                <!-- Chat Entry -->
+                <div class="card form-card expense-tab-content" id="chatExpenseContent">
+                    <div class="chat-entry-container">
+                        <div class="language-selector">
+                            <button class="language-btn active" onclick="setChatLanguage('en')" id="chatLangEN">🇬🇧 English</button>
+                            <button class="language-btn" onclick="setChatLanguage('ta')" id="chatLangTA">🇮🇳 தமிழ் (Tamil)</button>
+                        </div>
+                        <div id="chatMessages" class="chat-messages">
+                            <div class="chat-message bot">
+                                <div class="chat-avatar">🤖</div>
+                                <div class="chat-bubble" id="chatWelcomeMessage">Hi! Tell me about your expense. For example: "Spent 150 on coffee"</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" id="chatInput" class="chat-input" placeholder="Type your expense..." onkeypress="handleChatKeyPress(event)">
+                            <button class="chat-send-btn" onclick="sendChatMessage()">📤</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receipt Scanner -->
+                <div class="card form-card expense-tab-content" id="scanExpenseContent">
+                    <div class="scanner-container">
+                        <div class="scanner-upload-area" id="scannerUploadArea">
+                            <input type="file" id="receiptFileInput" accept="image/*" onchange="handleReceiptUpload(event)" style="display: none;">
+                            <div class="scanner-icon">📸</div>
+                            <p class="scanner-text">Drag &amp; drop receipt image or click to upload</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('receiptFileInput').click()">Choose Image</button>
+                        </div>
+                        <div id="scannerPreview" class="scanner-preview" style="display: none;">
+                            <img id="receiptImage" class="receipt-image" alt="Receipt">
+                            <div class="scanner-loading" id="scannerLoading">
+                                <div class="loading-spinner"></div>
+                                <p>Scanning receipt...</p>
+                            </div>
+                            <div id="scannedData" class="scanned-data" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Goals View -->
+        <div id="goalsView" class="view">
+            <div class="container">
+                <h2 class="view-title">Savings Goals</h2>
+                
+                <!-- Add Goal Form -->
+                <div class="card form-card">
+                    <h3 class="card-title">Add New Goal</h3>
+                    <form id="goalForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Goal Name</label>
+                                <input type="text" id="goalName" required placeholder="e.g., New Laptop">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Amount (₹)</label>
+                                <input type="number" id="goalTarget" required placeholder="Target amount" min="0" step="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Saved Amount (₹)</label>
+                                <input type="number" id="goalSaved" required placeholder="Amount saved" min="0" step="1" value="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Goal</button>
+                    </form>
+                    <div id="goalMessage" class="message"></div>
+                </div>
+
+                <!-- Goals List -->
+                <div id="goalsList" class="goals-list"></div>
+            </div>
+        </div>
+
+        <!-- Add Money Modal -->
+        <div id="addMoneyModal" class="modal">
+            <div class="modal-overlay" onclick="hideAddMoneyModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add Money to Goal</h3>
+                    <button class="modal-close" onclick="hideAddMoneyModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p id="addMoneyGoalName" class="add-money-goal-name"></p>
+                    <form id="addMoneyForm">
+                        <div class="form-group">
+                            <label>Amount to add (₹)</label>
+                            <input type="number" id="addMoneyAmount" required placeholder="Enter amount" min="1" step="1">
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="hideAddMoneyModal()">Cancel</button>
+                            <button type="submit" class="btn btn-success">Add to Goal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Report View -->
+        <div id="monthlyReportView" class="view">
+            <div class="container">
+                <h2 class="view-title">Monthly Financial Report</h2>
+                
+                <div class="card">
+                    <div class="form-group">
+                        <label>Select Month</label>
+                        <select id="reportMonthSelect" class="form-control" onchange="generateMonthlyReport()">
+                            <option value="2025-10">October 2025</option>
+                            <option value="2025-09">September 2025</option>
+                            <option value="2025-11">November 2025</option>
+                            <option value="2025-12">December 2025</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="monthlyReportContent">
+                    <!-- Report Summary Cards -->
+                    <div class="summary-cards">
+                        <div class="card summary-card">
+                            <div class="card-icon">💰</div>
+                            <div class="card-content">
+                                <div class="card-label">Total Income</div>
+                                <div class="card-value amount" id="reportIncome">₹5,000</div>
+                            </div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-icon">💸</div>
+                            <div class="card-content">
+                                <div class="card-label">Total Expenses</div>
+                                <div class="card-value amount" id="reportExpenses">₹1,950</div>
+                            </div>
+                        </div>
+                        <div class="card summary-card">
+                            <div class="card-icon">💵</div>
+                            <div class="card-content">
+                                <div class="card-label">Total Savings</div>
+                                <div class="card-value amount" id="reportSavings">₹3,050</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics -->
+                    <div class="card">
+                        <h3 class="card-title">Key Metrics</h3>
+                        <div id="reportMetrics" class="report-metrics"></div>
+                    </div>
+
+                    <!-- Category Breakdown -->
+                    <div class="card">
+                        <h3 class="card-title">Category-wise Spending</h3>
+                        <div id="reportCategoryBreakdown" class="category-breakdown"></div>
+                    </div>
+
+                    <!-- Export Button -->
+                    <div class="card">
+                        <button class="btn btn-primary" onclick="exportReportCSV()">📥 Export as CSV</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips View -->
+        <div id="tipsView" class="view">
+            <div class="container">
+                <h2 class="view-title">Financial Tips for Students</h2>
+                <div id="tipsList" class="tips-list"></div>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profileView" class="view">
+            <div class="container">
+                <h2 class="view-title">Profile &amp; Settings</h2>
+                
+                <!-- Profile Info Card -->
+                <div class="card profile-card">
+                    <div class="profile-header">
+                        <div class="profile-picture-container">
+                            <img id="profilePicture" class="profile-picture" src="" alt="Profile" style="display: none;">
+                            <div id="profilePlaceholder" class="profile-placeholder">👤</div>
+                            <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+                            <button class="profile-pic-upload-btn" onclick="document.getElementById('profilePicInput').click()">📷</button>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profileUsername" class="profile-username">Student</h3>
+                            <div class="profile-stats">
+                                <span class="profile-stat">Level <strong id="profileLevel">1</strong></span>
+                                <span class="profile-stat">•</span>
+                                <span class="profile-stat"><strong id="profileXP">0</strong> XP</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parent Co-Pilot Settings -->
+                <div class="card settings-card">
+                    <h3 class="card-title">👨‍👩‍👧 Parent Co-Pilot</h3>
+                    <p class="settings-description">Set up parent monitoring for budget alerts and notifications</p>
+                    
+                    <div class="form-group">
+                        <label>Parent Mobile Number</label>
+                        <div class="mobile-input-group">
+                            <div class="mobile-input-container">
+                                <select class="country-code-select" id="countryCode" tabindex="1">
+                                    <option value="+91">🇮🇳 +91</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                </select>
+                                <input 
+                                    type="tel" 
+                                    id="parentMobile" 
+                                    name="parentMobile"
+                                    class="mobile-number-input" 
+                                    placeholder="Enter 10-digit number" 
+                                    maxlength="10" 
+                                    pattern="[0-9]{10}"
+                                    inputmode="numeric"
+                                    autocomplete="tel"
+                                    tabindex="2">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="saveParentMobile()" tabindex="3">💾 Save Number</button>
+                            <span id="savedNumberDisplay" class="saved-number-display" style="display: none;"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Alert Threshold</label>
+                        <div class="slider-group">
+                            <input type="range" id="alertThreshold" class="threshold-slider" min="90" max="150" value="110" step="5" oninput="updateThresholdDisplay(this.value)">
+                            <span class="threshold-value" id="thresholdValue">110%</span>
+                        </div>
+                        <p class="help-text">Parents will be notified when spending exceeds this percentage</p>
+                    </div>
+                    
+                    <div class="settings-toggles">
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="monthlySummary" checked>
+                                <span class="toggle-switch"></span>
+                                <span>Monthly Summary</span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="emergencyAlerts" checked>
+                                <span class="toggle-switch"></span>
+                                <span>Emergency Alerts</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Settings -->
+                <div class="card settings-card">
+                    <h3 class="card-title">⚙️ Settings</h3>
+                    
+                    <div class="settings-toggles">
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                <span class="toggle-switch"></span>
+                                <span>Dark Mode</span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="notificationsToggle" checked>
+                                <span class="toggle-switch"></span>
+                                <span>Notifications</span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="privacyModeToggle" onchange="togglePrivacyMode()">
+                                <span class="toggle-switch"></span>
+                                <span>Privacy Mode</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="card settings-card">
+                    <h3 class="card-title">🔐 Account</h3>
+                    
+                    <div class="account-actions">
+                        <button class="btn btn-outline" onclick="downloadUserData()">📥 Download My Data (CSV)</button>
+                        <button class="btn btn-outline" onclick="clearAllData()">🗑️ Clear All Data</button>
+                        <button class="btn btn-danger btn-logout" onclick="logoutUser()">🚪 Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent Co-Pilot View -->
+        <div id="parentCoPilotView" class="view">
+            <div class="container">
+                <h2 class="view-title">👨‍👩‍👧 Parent Co-Pilot</h2>
+                
+                <div class="card">
+                    <h3 class="card-title">Set up Budget Alerts for Parents</h3>
+                    <p class="settings-description">Enable parent monitoring to receive notifications when spending exceeds budget limits</p>
+                    
+                    <div class="form-group">
+                        <label>Parent Mobile Number</label>
+                        <div class="mobile-input-group">
+                            <div class="mobile-input-container">
+                                <select class="country-code-select" id="parentCountryCode" tabindex="1">
+                                    <option value="+91">🇮🇳 +91</option>
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="+44">🇬🇧 +44</option>
+                                </select>
+                                <input 
+                                    type="tel" 
+                                    id="parentMobileInput" 
+                                    name="parentMobileInput"
+                                    class="mobile-number-input" 
+                                    placeholder="Enter 10-digit number" 
+                                    maxlength="10" 
+                                    pattern="[0-9]{10}"
+                                    inputmode="numeric"
+                                    autocomplete="tel"
+                                    tabindex="2">
+                            </div>
+                        </div>
+                        <div id="parentMobileStatus" class="saved-number-display" style="display: none; margin-top: 12px;"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Monthly Budget Limit (₹)</label>
+                        <input type="number" id="parentBudgetLimit" class="form-control" value="5000" min="100" step="100">
+                        <p class="help-text">Total monthly budget for all expenses</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Alert Threshold (%)</label>
+                        <div class="slider-group">
+                            <input type="range" id="parentAlertThreshold" class="threshold-slider" min="50" max="150" value="90" step="5" oninput="updateParentThresholdDisplay(this.value)">
+                            <span class="threshold-value" id="parentThresholdValue">90%</span>
+                        </div>
+                        <p class="help-text">Parents will be notified when spending reaches this percentage</p>
+                    </div>
+                    
+                    <div class="settings-toggles">
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="parentMonthlySummary" checked>
+                                <span class="toggle-switch"></span>
+                                <span>Monthly Summary Reports</span>
+                            </label>
+                        </div>
+                        <div class="toggle-item">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="parentEmergencyAlerts" checked>
+                                <span class="toggle-switch"></span>
+                                <span>Emergency Budget Alerts</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="saveParentCoPilotSettings()" style="margin-top: 16px;">💾 Save Parent Co-Pilot Settings</button>
+                    
+                    <div id="parentCoPilotMessage" class="message" style="margin-top: 16px;"></div>
+                </div>
+                
+                <!-- Current Budget Status -->
+                <div class="card">
+                    <h3 class="card-title">Current Month Budget Status</h3>
+                    <div class="budget-status-container">
+                        <div class="budget-progress-info">
+                            <div class="budget-stat">
+                                <span class="budget-stat-label">Total Spent</span>
+                                <span class="budget-stat-value amount" id="parentTotalSpent">₹0</span>
+                            </div>
+                            <div class="budget-stat">
+                                <span class="budget-stat-label">Budget Limit</span>
+                                <span class="budget-stat-value amount" id="parentBudgetLimitDisplay">₹5000</span>
+                            </div>
+                            <div class="budget-stat">
+                                <span class="budget-stat-label">Remaining</span>
+                                <span class="budget-stat-value amount" id="parentRemaining">₹5000</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar" style="height: 40px; margin: 20px 0;">
+                            <div class="progress-fill" id="parentProgressFill" style="width: 0%;"></div>
+                        </div>
+                        <div id="parentBudgetMessage" style="text-align: center; font-weight: 600; font-size: 16px;"></div>
+                    </div>
+                </div>
+                
+                <!-- Notification Log -->
+                <div class="card">
+                    <h3 class="card-title">Recent Notifications</h3>
+                    <div id="parentNotificationLog" class="notification-log"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent View -->
+        <div id="parentViewScreen" class="view">
+            <div class="container">
+                <h2 class="view-title">Parent View - Spending Overview</h2>
+                
+                <!-- Parent Summary Cards -->
+                <div class="summary-cards">
+                    <div class="card summary-card">
+                        <div class="card-icon">💰</div>
+                        <div class="card-content">
+                            <div class="card-label">Monthly Income</div>
+                            <div class="card-value amount" id="parentIncome">₹5000</div>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card-icon">💸</div>
+                        <div class="card-content">
+                            <div class="card-label">Total Spent</div>
+                            <div class="card-value amount" id="parentSpent">₹0</div>
+                        </div>
+                    </div>
+                    <div class="card summary-card">
+                        <div class="card-icon">💵</div>
+                        <div class="card-content">
+                            <div class="card-label">Remaining</div>
+                            <div class="card-value amount" id="parentRemaining">₹5000</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Summary -->
+                <div class="card">
+                    <h3 class="card-title">Spending by Category</h3>
+                    <div id="parentCategoryList" class="parent-category-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Setup Wizard Modal -->
+        <div id="budgetWizardModal" class="modal">
+            <div class="modal-overlay" onclick="hideBudgetWizard()"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>🎯 Budget Setup Wizard</h3>
+                    <button class="modal-close" onclick="hideBudgetWizard()">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: Income Input -->
+                    <div id="wizardStep1" class="wizard-step active">
+                        <div class="wizard-intro">
+                            <p>Let's set up your monthly budget. First, enter your monthly income.</p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Monthly Income (₹)</label>
+                            <input type="number" id="wizardIncome" class="form-control" placeholder="Enter your monthly income" min="0">
+                        </div>
+
+                        <div class="wizard-actions">
+                            <button class="btn btn-secondary" onclick="hideBudgetWizard()">Cancel</button>
+                            <button class="btn btn-primary" onclick="wizardGoToStep2()">Next: Choose Budget Method</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Choose Method -->
+                    <div id="wizardStep2" class="wizard-step">
+                        <div class="wizard-intro">
+                            <p>Choose how you want to set up your budget:</p>
+                        </div>
+                        
+                        <div class="budget-method-selection">
+                            <div class="method-card" onclick="wizardUseRecommendations()">
+                                <div class="method-icon">💡</div>
+                                <h4>Use Smart Recommendations</h4>
+                                <p>We'll suggest percentages based on your income level</p>
+                            </div>
+                            <div class="method-card" onclick="wizardCustomizeBudget()">
+                                <div class="method-icon">🎨</div>
+                                <h4>Customize My Own Budget</h4>
+                                <p>Set your own percentages for each category</p>
+                            </div>
+                        </div>
+
+                        <div class="wizard-actions">
+                            <button class="btn btn-secondary" onclick="wizardGoToStep1()">← Back</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3A: Recommendations -->
+                    <div id="wizardStep3Recommendations" class="wizard-step">
+                        <div class="wizard-intro">
+                            <h4>Recommended Budget Allocation</h4>
+                            <p class="recommendation-note">Based on your income, we suggest the following budget:</p>
+                        </div>
+                        
+                        <div id="recommendationsList" class="recommendations-list"></div>
+
+                        <div class="wizard-actions">
+                            <button class="btn btn-secondary" onclick="wizardGoToStep2()">← Back</button>
+                            <button class="btn btn-outline" onclick="wizardCustomizeThese()">Customize These</button>
+                            <button class="btn btn-primary" onclick="applyBudgetRecommendations()">Accept &amp; Continue</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3B: Custom Allocation -->
+                    <div id="wizardStep3Custom" class="wizard-step">
+                        <div class="wizard-intro">
+                            <h4>Customize Your Budget Allocation</h4>
+                            <p class="recommendation-note">Adjust the sliders to set your own percentages. Total must equal 100%.</p>
+                        </div>
+                        
+                        <div id="customAllocationSliders" class="custom-allocation-container"></div>
+
+                        <div class="total-percentage-indicator">
+                            <div class="total-circle" id="totalPercentageCircle">
+                                <div class="total-value" id="totalPercentageValue">0%</div>
+                                <div class="total-label">Total</div>
+                            </div>
+                            <div class="total-message" id="totalPercentageMessage">Add 100% to balance budget</div>
+                        </div>
+
+                        <div class="wizard-actions">
+                            <button class="btn btn-secondary" onclick="wizardGoToStep2()">← Back</button>
+                            <button class="btn btn-outline" onclick="wizardUseRecommendations()">Use Recommendations</button>
+                            <button class="btn btn-primary" id="saveCustomBudgetBtn" disabled onclick="applyCustomBudget()">Save Budget</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Budget Allocation Modal -->
+        <div id="editBudgetModal" class="modal">
+            <div class="modal-overlay" onclick="hideEditBudgetModal()"></div>
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>✏️ Edit Budget Allocation</h3>
+                    <button class="modal-close" onclick="hideEditBudgetModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="wizard-intro">
+                        <p>Adjust your budget percentages. Total must equal 100%.</p>
+                    </div>
+                    
+                    <div id="editAllocationSliders" class="custom-allocation-container"></div>
+
+                    <div class="total-percentage-indicator">
+                        <div class="total-circle" id="editTotalPercentageCircle">
+                            <div class="total-value" id="editTotalPercentageValue">100%</div>
+                            <div class="total-label">Total</div>
+                        </div>
+                        <div class="total-message" id="editTotalPercentageMessage">✓ Budget balanced at 100%!</div>
+                    </div>
+
+                    <div class="wizard-actions">
+                        <button class="btn btn-secondary" onclick="hideEditBudgetModal()">Cancel</button>
+                        <button class="btn btn-outline" onclick="resetToRecommendations()">Reset to Recommendations</button>
+                        <button class="btn btn-primary" id="saveEditBudgetBtn" onclick="saveEditedBudget()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Level Up Modal -->
+        <div id="levelUpModal" class="modal level-up-modal">
+            <div class="modal-overlay" onclick="hideLevelUpModal()"></div>
+            <div class="modal-content level-up-content">
+                <div class="level-up-animation">
+                    <div class="level-up-icon">⭐</div>
+                    <h2 class="level-up-title">Level Up!</h2>
+                    <div class="level-up-new-level" id="levelUpNewLevel">Level 2</div>
+                    <p class="level-up-message">You're becoming a budget master! Keep up the great work!</p>
+                    <button class="btn btn-primary" onclick="hideLevelUpModal()">Awesome! 🎉</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Unlock Modal -->
+        <div id="achievementModal" class="modal achievement-modal">
+            <div class="modal-overlay" onclick="hideAchievementModal()"></div>
+            <div class="modal-content achievement-content">
+                <div class="achievement-unlock-animation">
+                    <div class="achievement-badge-large" id="achievementBadgeLarge">🏆</div>
+                    <h3 class="achievement-unlock-title">Achievement Unlocked!</h3>
+                    <div class="achievement-unlock-name" id="achievementUnlockName">Budget Master</div>
+                    <div class="achievement-unlock-desc" id="achievementUnlockDesc">Completed your first budget plan</div>
+                    <div class="achievement-unlock-xp">+<span id="achievementXP">50</span> XP</div>
+                    <button class="btn btn-primary" onclick="hideAchievementModal()">Collect Reward</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parent Notification Badge -->
+        <div id="parentNotification" class="parent-notification" style="display: none;">
+            <div class="parent-notif-icon">👨‍👩‍👧</div>
+            <div class="parent-notif-text">Parent notification sent</div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
